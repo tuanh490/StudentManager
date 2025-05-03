@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UpdateStudentActivity"
+    tools:ignore="HardCodedText"
+    >
+
+    <EditText
+        android:id="@+id/updateName"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:autofillHints="name"
+        android:hint="Họ và tên"
+        android:inputType="text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <EditText
+        android:id="@+id/updateId"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:autofillHints="mssv"
+        android:hint="MSSV"
+        android:inputType="number"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/updateName"/>
+
+    <EditText
+        android:id="@+id/updateEmail"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:autofillHints="emailAddress"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/updateId"/>
+
+    <EditText
+        android:id="@+id/updatePhone"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:autofillHints="phone"
+        android:hint="SĐT"
+        android:inputType="phone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/updateEmail"/>
+
+    <Button
+        android:id="@+id/updateButton"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Lưu"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/updatePhone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

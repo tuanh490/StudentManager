@@ -11,13 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class AddStudentActivity : AppCompatActivity() {
-    private lateinit var adapter: StudentAdapter
-
+class UpdateStudentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_add_student)
+        setContentView(R.layout.activity_update_student)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -26,30 +24,40 @@ class AddStudentActivity : AppCompatActivity() {
 
         supportActionBar?.title = "Student Manager"
         supportActionBar?.setDisplayShowHomeEnabled(true)
+        
+        val oldStudent = intent.getParcelableExtra<StudentModel>("student")
+        
+        val updateName = findViewById<EditText>(R.id.updateName)
+        val updateId = findViewById<EditText>(R.id.updateId)
+        val updateEmail = findViewById<EditText>(R.id.updateEmail)
+        val updatePhone = findViewById<EditText>(R.id.updatePhone)
+        val updateButton = findViewById<Button>(R.id.updateButton)
 
-        val editName = findViewById<EditText>(R.id.editName)
-        val editId = findViewById<EditText>(R.id.editId)
-        val editEmail = findViewById<EditText>(R.id.editEmail)
-        val editPhone = findViewById<EditText>(R.id.editPhone)
-        val addButton = findViewById<Button>(R.id.add)
+        if (oldStudent != null) {
+            updateName.setText(oldStudent.name)
+            updateId.setText(oldStudent.mssv)
+            updateEmail.setText(oldStudent.email)
+            updatePhone.setText(oldStudent.phone)
+        }
 
-        addButton.setOnClickListener {
-            val name = editName.text.toString()
-            val mssv = editId.text.toString()
-            val email = editEmail.text.toString()
-            val phone = editPhone.text.toString()
+        updateButton.setOnClickListener {
+            val name = updateName.text.toString()
+            val mssv = updateId.text.toString()
+            val email = updateEmail.text.toString()
+            val phone = updatePhone.text.toString()
 
             if (name.isNotEmpty() && mssv.isNotEmpty()) {
                 val newStudent = StudentModel(name, mssv, email, phone)
 
                 val resultIntent = Intent().apply {
                     putExtra("newStudent", newStudent)
+                    putExtra("oldStudent", oldStudent)
                 }
+
                 setResult(RESULT_OK, resultIntent)
                 finish()
             }
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

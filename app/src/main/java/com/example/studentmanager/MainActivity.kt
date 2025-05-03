@@ -1,11 +1,15 @@
 package com.example.studentmanager
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -17,11 +21,23 @@ class MainActivity : AppCompatActivity() {
 
     private val addStudentLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val student = result.data?.getParcelableExtra<StudentModel>("newStudent")
+    ) { intent ->
+        if (intent.resultCode == RESULT_OK) {
+            val student = intent.data?.getParcelableExtra<StudentModel>("newStudent")
             if (student != null) {
                 adapter.addStudent(student)
+            }
+        }
+    }
+
+    private val updateStudentLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { intent ->
+        if (intent.resultCode == RESULT_OK) {
+            val oldStudent = intent.data?.getParcelableExtra<StudentModel>("oldStudent")
+            val newStudent = intent.data?.getParcelableExtra<StudentModel>("newStudent")
+            if (oldStudent != null && newStudent != null) {
+                adapter.updateStudent(oldStudent, newStudent)
             }
         }
     }
@@ -39,13 +55,36 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title = "Student Manager"
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        adapter = StudentAdapter { student ->
-            adapter.removeStudent(student)
-        }
+        adapter = StudentAdapter({student: StudentModel ->
+            AlertDialog.Builder(this)
+                .setTitle("Xác nhận xóa sinh viên")
+                .setPositiveButton("Xác nhận") {_, _ ->
+                    adapter.removeStudent(student)
+                }
+                .setNegativeButton("Hủy", null)
+                .create()
+                .show()
+        }, { oldStudent ->
+            val intent = Intent(this, UpdateStudentActivity::class.java)
+            intent.putExtra("student", oldStudent)
+            updateStudentLauncher.launch(intent)
+        }, { student ->
+            val intent = Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:${student.phone}")
+            }
+            startActivity(intent)
+        }, { student ->
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:${student.email}")
+            }
+            startActivity(intent)
+        })
 
         val listStudents = findViewById<RecyclerView>(R.id.list_students)
         listStudents.layoutManager = LinearLayoutManager(this)
         listStudents.adapter = adapter
+
+        registerForContextMenu(listStudents)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
