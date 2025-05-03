@@ -4,32 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
+import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 
-class MainActivity : AppCompatActivity() {
+class AddStudentActivity : AppCompatActivity() {
     private lateinit var adapter: StudentAdapter
-
-    private val addStudentLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val student = result.data?.getParcelableExtra<StudentModel>("newStudent")
-            if (student != null) {
-                adapter.addStudent(student)
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_add_student)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -39,28 +27,44 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.title = "Student Manager"
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
-        adapter = StudentAdapter { student ->
-            adapter.removeStudent(student)
+        val editName = findViewById<EditText>(R.id.editName)
+        val editId = findViewById<EditText>(R.id.editId)
+        val editEmail = findViewById<EditText>(R.id.editEmail)
+        val editPhone = findViewById<EditText>(R.id.editPhone)
+        val addButton = findViewById<Button>(R.id.add)
+
+        addButton.setOnClickListener {
+            val name = editName.text.toString()
+            val mssv = editId.text.toString()
+            val email = editEmail.text.toString()
+            val phone = editPhone.text.toString()
+
+            if (name.isNotEmpty() && mssv.isNotEmpty()) {
+                val newStudent = StudentModel(name, mssv, email, phone)
+
+                val resultIntent = Intent().apply {
+                    putExtra("newStudent", newStudent)
+                }
+                setResult(RESULT_OK, resultIntent)
+                finish()
+            }
         }
 
-        val listStudents = findViewById<RecyclerView>(R.id.list_students)
-        listStudents.layoutManager = LinearLayoutManager(this)
-        listStudents.adapter = adapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.option_menu, menu)
 
-        menu?.findItem(R.id.home)?.isVisible = false
+        menu?.findItem(R.id.addStudent)?.isVisible = false
 
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.addStudent -> {
-                val intent = Intent(this, AddStudentActivity::class.java)
-                addStudentLauncher.launch(intent)
+            R.id.home -> {
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
                 true
             }
             else -> super.onOptionsItemSelected(item)

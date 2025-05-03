@@ -1,6 +1,40 @@
 package com.example.studentmanager
 
+import android.os.Parcel
+import android.os.Parcelable
+
 data class StudentModel(
-    val name: String,
-    val mssv: String
-)
+    var name: String?,
+    var mssv: String?,
+    var email: String?,
+    var phone: String?
+): Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString()
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
+        parcel.writeString(mssv)
+        parcel.writeString(email)
+        parcel.writeString(phone)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<StudentModel> {
+        override fun createFromParcel(parcel: Parcel): StudentModel {
+            return StudentModel(parcel)
+        }
+
+        override fun newArray(size: Int): Array<StudentModel?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
